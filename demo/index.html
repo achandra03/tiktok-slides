@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FitLens Poster — TikTok Integration Demo</title>
+<style>
+  :root{--ink:#161616;--muted:#5b5b5b;--accent:#0a66c2;--ok:#0e7a3d;--bg:#f6f6f7;--card:#ffffff}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;margin:0;color:var(--ink);background:var(--bg);line-height:1.55}
+  header{background:#101010;color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+  header .brand{font-weight:800;font-size:18px}
+  header .sub{font-size:12px;color:#bbb}
+  main{max-width:860px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:30px;margin:6px 0 4px}
+  .lede{color:var(--muted);margin-top:0}
+  .step{background:var(--card);border:1px solid #e3e3e6;border-radius:14px;padding:22px;margin:22px 0;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  .step h2{margin:0 0 4px;font-size:20px}
+  .pill{display:inline-block;font-size:12px;font-weight:700;background:#eef4ff;color:var(--accent);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+  .scope{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:#f0f0f2;border:1px solid #e2e2e5;border-radius:6px;padding:2px 8px}
+  button{cursor:pointer;border:0;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:700}
+  .btn-dark{background:#101010;color:#fff}
+  .btn-dark:disabled{opacity:.45;cursor:default}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:disabled{opacity:.45;cursor:default}
+  .hidden{display:none!important}
+  .oauth-box{margin-top:14px;border:1px dashed #b9b9c0;border-radius:10px;padding:14px;background:#fafafb;font-size:14px}
+  .oauth-box code{font-size:12.5px;word-break:break-all}
+  .connected{margin-top:14px;padding:12px 16px;border-radius:10px;background:#e9f7ef;color:var(--ok);font-weight:700}
+  .slides{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .slides img{width:100%;border-radius:10px;border:1px solid #e3e3e6;display:block}
+  .caption-box{margin-top:12px;background:#fafafb;border:1px solid #e6e6e9;border-radius:10px;padding:12px 14px;font-size:14px}
+  .log{margin-top:14px;background:#101010;color:#d7f5dd;border-radius:10px;padding:14px 16px;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.7;min-height:120px}
+  .log .dim{color:#8b8b93}.log .ok{color:#5eead4;font-weight:700}
+  .status{margin-top:12px;font-weight:800;font-size:16px}
+  .summary{background:#101010;color:#fff;border-radius:14px;padding:22px;margin-top:26px}
+  .summary h2{margin-top:0;color:#fff}
+  .summary li{margin:6px 0}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin:34px 0 10px}
+  a{color:var(--accent)}
+</style>
+</head><body>
+<header>
+  <div><div class="brand">FitLens Poster</div><div class="sub">TikTok integration demo &middot; achandra03.github.io/tiktok-slides/demo/</div></div>
+  <div class="sub">Sandbox walkthrough</div>
+</header>
+<main>
+  <h1>TikTok integration demo</h1>
+  <p class="lede">End-to-end walkthrough of how FitLens Poster uses TikTok's <strong>Login Kit</strong> and
+  <strong>Content Posting API</strong> to publish photo carousels to <strong>@casey.gym.lifts</strong>.</p>
+
+  <!-- STEP 1 -->
+  <section class="step" id="step1">
+    <span class="pill">Product: Login Kit</span>
+    <h2>Step 1 &mdash; Connect the TikTok account</h2>
+    <p>The account owner authorizes FitLens Poster via TikTok's official OAuth flow.
+    Requested scope: <span class="scope">user.info.basic</span></p>
+    <button class="btn-dark" id="connectBtn">Connect with TikTok</button>
+    <div class="oauth-box hidden" id="oauthBox">
+      Redirecting to TikTok authorization:<br>
+      <code>https://www.tiktok.com/v2/auth/authorize/?client_key=&#8230;&amp;scope=user.info.basic&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fhttpbin.org%2Fget</code><br><br>
+      <span class="dim" style="color:#5b5b5b">The owner approves <strong>@casey.gym.lifts</strong> on tiktok.com, then TikTok
+      returns an authorization code that is exchanged for access &amp; refresh tokens.</span>
+    </div>
+    <div class="connected hidden" id="connectedBox">&#10003; Connected as @casey.gym.lifts &mdash; scope granted: user.info.basic</div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="step2">
+    <span class="pill">Content preparation</span>
+    <h2>Step 2 &mdash; Build the carousel</h2>
+    <p>FitLens Poster renders 1080&times;1920 slides (Pinterest-sourced imagery, TikTok-native burned-in text),
+    uploads them to this site's hosting, and composes the caption.</p>
+    <div class="slides">
+      <img src="slides/01.jpg" alt="slide 1"><img src="slides/02.jpg" alt="slide 2"><img src="slides/03.jpg" alt="slide 3">
+      <img src="slides/04.jpg" alt="slide 4"><img src="slides/05.jpg" alt="slide 5"><img src="slides/06.jpg" alt="slide 6">
+    </div>
+    <div class="caption-box"><strong>Caption:</strong> 3 form mistakes secretly killing your glute gains 🍑<br>
+    <strong>Hashtags:</strong> #gymgirl #glutegrowth #glutes #gluteworkout #gymtok #formcheck</div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="step3">
+    <span class="pill">Product: Content Posting API</span>
+    <h2>Step 3 &mdash; Publish via API</h2>
+    <p>Direct post as a photo carousel. Requested scope: <span class="scope">video.publish</span>.
+    Images are pulled by TikTok from the verified URL prefix on this domain
+    (<span class="scope">PULL_FROM_URL</span>, mode <span class="scope">DIRECT_POST</span>).</p>
+    <button class="btn-accent" id="postBtn" disabled>Post to TikTok</button>
+    <div class="log" id="apiLog"><span class="dim">API log — waiting to post&hellip;</span></div>
+    <div class="status hidden" id="publishStatus"></div>
+  </section>
+
+  <section class="summary">
+    <h2>What this demo showed</h2>
+    <ul>
+      <li><strong>Login Kit</strong> (<span class="scope">user.info.basic</span>): OAuth authorization of @casey.gym.lifts.</li>
+      <li><strong>Content Posting API</strong> (<span class="scope">video.publish</span>): <span class="scope">DIRECT_POST</span> photo carousel via <span class="scope">PULL_FROM_URL</span> from the verified domain.</li>
+      <li>Posts publish as <strong>Private (SELF_ONLY)</strong> while the app is in sandbox; public posting unlocks after audit.</li>
+    </ul>
+  </section>
+
+  <footer>FitLens Poster &middot; achandra03.github.io/tiktok-slides &middot; <a href="../privacy.html">Privacy</a> &middot; <a href="../terms.html">Terms</a></footer>
+</main>
+<script>
+const connectBtn=document.getElementById('connectBtn'),oauthBox=document.getElementById('oauthBox'),
+      connectedBox=document.getElementById('connectedBox'),postBtn=document.getElementById('postBtn'),
+      apiLog=document.getElementById('apiLog'),publishStatus=document.getElementById('publishStatus');
+connectBtn.addEventListener('click',()=>{
+  connectBtn.disabled=true;connectBtn.textContent='Waiting for TikTok approval…';
+  oauthBox.classList.remove('hidden');
+  setTimeout(()=>{oauthBox.classList.add('hidden');connectedBox.classList.remove('hidden');
+    connectBtn.textContent='Connected';postBtn.disabled=false;},2200);
+});
+const lines=[
+  ['dim','› Refreshing access token (grant_type=refresh_token)…'],
+  ['dim','› POST /v2/post/publish/content/init/'],
+  ['dim','&nbsp;&nbsp;post_info: title="3 form mistakes secretly killing your glute gains", privacy_level=SELF_ONLY'],
+  ['dim','&nbsp;&nbsp;source_info: source=PULL_FROM_URL, 6 × JPEG, media_type=PHOTO'],
+  ['dim','› publish_id received: p_pub_9f27c1… — polling /v2/post/publish/status/fetch/'],
+  ['dim','&nbsp;&nbsp;status: PROCESSING → PUBLISH_COMPLETE'],
+  ['ok','✓ PUBLISH_COMPLETE — carousel is live as Private on @casey.gym.lifts']
+];
+postBtn.addEventListener('click',()=>{
+  postBtn.disabled=true;postBtn.textContent='Posting…';apiLog.innerHTML='';let i=0;
+  const t=setInterval(()=>{ if(i>=lines.length){clearInterval(t);
+      publishStatus.classList.remove('hidden');
+      publishStatus.innerHTML='✓ Published — Private (SELF_ONLY). Public posting unlocks after app audit.';
+      publishStatus.style.color='#0e7a3d';postBtn.textContent='Posted';return;}
+    const d=document.createElement('div');d.className=lines[i][0];d.innerHTML=lines[i][1];
+    apiLog.appendChild(d);i++;},900);
+});
+</script>
+</body></html>
